@@ -46,8 +46,7 @@ services:
       - "MASTER=spark://spark-master:7077"
       - "SPARK_MASTER=spark://spark-master:7077"
     ports:
-      - 8008:8080
+      - 8888:8080
     volumes:
-      - ./zepplin/notebooks:/zepplin/notebooks
-      - ./zepplin/logs:/zepplin:logs
-      - ./zepplin
+      - ./zeppelin/notebooks:/zeppelin/notebooks
+      - ./zeppelin/logs:/zeppelin:logs
