@@ -1,0 +1,53 @@
+version: "3.8"
+volumes:
+  shared-workspace:
+    name: "hdfs"
+    driver: local
+
+services:
+  spark-master:
+    image: spark-master
+    container_name: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    volumes:
+      - shared-workspace:/opt/workspace
+    
+  spark-worker-1:
+    image: spark-worker
+    container_name: spark-worker-1
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+    ports:
+      - 8081:8081
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master
+  
+  spark-worker-2:
+    image: spark-worker
+    container_name: spark-worker-2
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+    ports:
+      - 8082:8081
+    volumes:
+      - shared-workspace:/opt/workspace
+    depends_on:
+      - spark-master  
+
+  zepplin:
+    image: apache/zeppelin:0.10.0
+    container_name: zepplin
+    environment:
+      - "SPARK_HOME=/opt/spark"
+      - "MASTER=spark://spark-master:7077"
+      - "SPARK_MASTER=spark://spark-master:7077"
+    ports:
+      - 8008:8080
+    volumes:
+      - ./zepplin/notebooks:/zepplin/notebooks
+      - ./zepplin/logs:/zepplin:logs
+      - ./zepplin
