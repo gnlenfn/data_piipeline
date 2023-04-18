@@ -10,6 +10,7 @@ RUN sed -i 's@archive.ubuntu.com@kr.archive.ubuntu.com@g' /etc/apt/sources.list
 # package 설치
 RUN apt-get update && \
     apt-get install wget -y && \
+    apt-get install vim -y && \
     apt-get install python3.9 -y && \
     apt-get install python3-pip -y && \
     apt-get install openjdk-11-jdk -y
