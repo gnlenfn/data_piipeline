@@ -5,6 +5,7 @@
 test.py
 
 youtube/venv
-youtube/env/*
-youtube/logs/*
+youtube/env/.env
+youtube/env/*.json
+youtube/logs/*.log
 *.parquet
