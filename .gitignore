@@ -1,0 +1,10 @@
+.DS_Store
+
+*.ipynb*
+.vscode
+test.py
+
+youtube/venv
+youtube/env/*
+youtube/logs/*
+*.parquet
