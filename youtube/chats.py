@@ -28,7 +28,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GCS_KEY_PATH
 YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"] #gcp youtube data api 에서 api key 생성 
 pafy.set_api_key(YOUTUBE_API_KEY) 
 
-video_id = 'Xxq2xVSXqUA' # 달라지는 영상 ID 어떻게 추적?
+video_id = 'FJfwehhzIhw' # TODO: 달라지는 영상 ID 어떻게 추적?
 file_path = './news_ytn_youtube.parquet'
 
 
