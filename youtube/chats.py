@@ -10,9 +10,10 @@ import logging
 
 from google.cloud import storage
 
-load_dotenv("env/.env")
+CURRENT_PATH = os.getcwd()
+load_dotenv(f"{CURRENT_PATH}/youtube/env/.env")
 
-log_handler = handlers.TimedRotatingFileHandler(filename="logs/chat.log", when='midnight', interval=1, encoding='utf-8')
+log_handler = handlers.TimedRotatingFileHandler(filename=f"{CURRENT_PATH}/youtube/logs/chat.log", when='midnight', interval=1, encoding='utf-8')
 log_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s:%(message)s"))
 log_handler.suffix = "%Y-%m-%d"
 
@@ -65,7 +66,7 @@ def save_df_to_gcs(df: pd.DataFrame) -> None:
     blob = bucket.blob(f"streaming_chat/{FILE_NAME}_{time.time()}.parquet")
     blob.upload_from_filename(f"./{FILE_NAME}.parquet")
 
-    logger.warning("parquet uploaded!")
+    logger.warning(f"{len(df)} length parquet uploaded!")
 
 
 if __name__ == "__main__":

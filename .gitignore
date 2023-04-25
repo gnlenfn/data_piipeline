@@ -5,8 +5,8 @@
 .idea
 test.py
 
-youtube/venv
+venv
 youtube/env/.env
 youtube/env/*.json
-youtube/logs/*.log
+youtube/logs/*
 *.parquet
