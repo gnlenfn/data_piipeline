@@ -6,7 +6,8 @@
 test.py
 
 venv
-youtube/env/.env
-youtube/env/*.json
+youtube/config/default.py
+youtube/config/gcs.json
 youtube/logs/*
 *.parquet
+*.csv
