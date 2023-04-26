@@ -83,8 +83,11 @@ def scrape_chats() -> None:
 
 
 def save_to_csv(df: pd.DataFrame) -> None:
-    df = df.astype(str)
-    df.to_csv(f"youtube/{FILE_NAME}.csv", mode='a', encoding='utf-8')
+    if not os.path.exists(f"youtube/{FILE_NAME}.csv"):
+        df.to_csv(f"youtube/{FILE_NAME}.csv", mode='w', encoding='utf-8')
+    else:
+        df.to_csv(f"youtube/{FILE_NAME}.csv", mode='a', encoding='utf-8', header=False)
+        
     logger.info(f"saved {len(df)} csv file!")
     
 
