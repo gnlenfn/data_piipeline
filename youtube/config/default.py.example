@@ -1,0 +1,9 @@
+import os
+
+config_path = os.path.dirname(os.path.realpath(__file__))
+BASE_PATH = "/".join(config_path.split("/")[:-1])
+CURRENT_FILE = os.path.basename(__file__)
+LOG_FILENAME = f"log-{CURRENT_FILE[:-3]}"
+LOG_DIR = f"{BASE_PATH}/logs"
+GCS_KEY_PATH=f"{config_path}/<filename>.json"
+YOUTUBE_API_KEY="API-KEY"
