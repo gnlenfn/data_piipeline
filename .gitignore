@@ -8,6 +8,7 @@ test.py
 venv
 youtube/config/default.py
 youtube/config/gcs.json
+youtube/config/__pycache__
 youtube/logs/*
 *.parquet
 *.csv
