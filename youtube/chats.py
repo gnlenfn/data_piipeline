@@ -3,23 +3,12 @@ import pafy #유튜브 정보
 import pandas as pd 
 import json
 from datetime import datetime, timedelta
-import os
 import logging 
 from logging import handlers
 from apscheduler.schedulers.background import BackgroundScheduler
 from google.cloud import storage
 
 from config.default import *
-
-# # logging
-# CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-# CURRENT_FILE = os.path.basename(__file__)
-# LOG_FILENAME = f"log-{CURRENT_FILE[:-3]}"
-# LOG_DIR = f"{CURRENT_PATH}/logs"
-# if not os.path.exists(LOG_DIR):
-#     os.makedirs(LOG_DIR)
-
-# load_dotenv(f"{CURRENT_PATH}/env/.env")
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -42,7 +31,7 @@ logger.addHandler(console_log_handler)
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GCS_KEY_PATH
 pafy.set_api_key(YOUTUBE_API_KEY) 
 
-video_id = 'FJfwehhzIhw' # TODO: 달라지는 영상 ID 어떻게 추적?
+video_id = 'FJfwehhzIhw'  # TODO: 달라지는 영상 ID 어떻게 추적?
 BUCKET_NAME = "2023-de-zoomcamp"
 FILE_NAME = "news_ytn_youtube"
 
@@ -69,12 +58,12 @@ def scrape_chats() -> None:
             df.loc[len(df)] = new_row
 
         now = datetime.now().time()
-        if now.hour == 0 and now.minute == 0:  # 12시 되면 지금까지 쌓인것 모두 저장
+        if now.hour == 15 and now.minute == 0:  # 자정 되면 지금까지 쌓인것 모두 저장 -> UTC 시간으로 생각해야함 (GCP 인스턴스 기준 -09:00)
             save_to_csv(df)
             df = pd.DataFrame(columns=['id', 'datetime', 'name', 'message', 'author_channel', 'is_chat_moderator'])
             continue
 
-        if len(df) >= 10000: 
+        if len(df) >= 100: 
             save_to_csv(df)
             df = pd.DataFrame(columns=['id', 'datetime', 'name', 'message', 'author_channel', 'is_chat_moderator'])
 
@@ -87,7 +76,7 @@ def save_to_csv(df: pd.DataFrame) -> None:
         df.to_csv(f"youtube/{FILE_NAME}.csv", mode='w', encoding='utf-8')
     else:
         df.to_csv(f"youtube/{FILE_NAME}.csv", mode='a', encoding='utf-8', header=False)
-        
+
     logger.info(f"saved {len(df)} csv file!")
     
 
@@ -98,7 +87,7 @@ def csv_to_gcs_parquet() -> None:
     # upload gcs
     storage_client = storage.Client()
     bucket = storage_client.bucket(BUCKET_NAME)
-    tday = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')  # gcs로 저장 cron을 자정 지나서 하므로 어제 날짜 사용
+    tday = datetime.today().strftime('%Y-%m-%d')  # gcs로 저장 cron을 자정(KST) 지나서 하지만 UTC 시간은 아직 전날이므로 날짜변동 X
     blob = bucket.blob(f"streaming_chat/{FILE_NAME}_{tday}.parquet")
     blob.upload_from_filename(f"./{FILE_NAME}.parquet")
 
@@ -113,6 +102,6 @@ def csv_to_gcs_parquet() -> None:
 if __name__ == "__main__":
     scrape_chats()
 
-    sched = BackgroundScheduler()
-    sched.start()
-    sched.add_job(csv_to_gcs_parquet, 'cron', hour=0, minute =30)  # 00:30에 parquet를 csv로
+    schedule = BackgroundScheduler()
+    schedule.start()
+    schedule.add_job(csv_to_gcs_parquet, 'cron', hour=0, minute =30)  # 00:30에 csv를 parquet로
