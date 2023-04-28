@@ -14,10 +14,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 formatter = logging.Formatter("%(asctime)s %(levelname)s:%(message)s")
 
+LOG_FILENAME = f"{os.path.dirname(os.path.realpath(__file__))[:-3]}"
 file_log_handler = handlers.TimedRotatingFileHandler(
     filename=f"{BASE_PATH}/logs/{LOG_FILENAME}", when='midnight', interval=1, encoding='utf-8'
     )
-file_log_handler.suffix = ".log-%Y-%m-%d"
+file_log_handler.suffix = "log-%Y-%m-%d"
 file_log_handler.setLevel(logging.INFO)
 file_log_handler.setFormatter(formatter)
 
@@ -39,7 +40,8 @@ FILE_NAME = "news_ytn_youtube"
 def scrape_chats() -> None:
     chat = pytchat.create(video_id=video_id)
     df = pd.DataFrame(columns=['id', 'datetime', 'name', 'message', 'author_channel', 'is_chat_moderator'])
-
+    
+    logger.info("while loop started!")
     while chat.is_alive():
         data = chat.get()
         items = data.items
