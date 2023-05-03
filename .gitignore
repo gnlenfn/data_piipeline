@@ -5,10 +5,12 @@
 .idea
 test.py
 
+spark/config/**
+!spark/config/*.example
+spark/data/**
+!spark/data/sample
+
 venv
-youtube/config/default.py
-youtube/config/gcs.json
-youtube/config/__pycache__
-youtube/logs/*
+youtube/
 *.parquet
 *.csv
