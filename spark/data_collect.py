@@ -30,7 +30,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = GCS_KEY_PATH
 BUCKET_NAME = "2023-de-zoomcamp"
 
 def download_trip_data() -> None:
-    os.system("cd data && mkdir yellow green fhv fhvhv")
+    os.system("cd spark/data && mkdir yellow green fhv fhvhv")
     try:
         for type in ['yellow', 'green', 'fhv', 'fhvhv']:
             for year in [2020, 2021, 2022]:
@@ -39,7 +39,19 @@ def download_trip_data() -> None:
 
     except KeyboardInterrupt:
         raise KeyboardInterrupt
+    
+    
+def download_and_upload_zone_data() -> None:
+    os.system("cd spark/data && wget https://d37ci6vzurychx.cloudfront.net/misc/taxi+_zone_lookup.csv -P spark/data/ -O taxi_zone_lookup.csv")
 
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob("data/taxi_zone_lookup.csv")
+    with open("spark/data/taxi_zone_lookup.csv", 'rb') as file:
+        blob.upload_from_file(file)
+
+    logger.info("zone data uploaded!")
+    
 
 def parquet_to_gcs() -> None:
     for type in ['yellow', 'green', 'fhv', 'fhvhv']:
@@ -55,4 +67,5 @@ def parquet_to_gcs() -> None:
 
 if __name__ == "__main__":
     download_trip_data()
+    download_and_upload_zone_data()
     parquet_to_gcs()
