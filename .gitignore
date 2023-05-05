@@ -7,8 +7,8 @@ test.py
 
 spark/config/**
 !spark/config/*.example
-spark/data/**
-!spark/data/sample
+spark/data/input/**
+!spark/data/input/sample
 
 venv
 youtube/
