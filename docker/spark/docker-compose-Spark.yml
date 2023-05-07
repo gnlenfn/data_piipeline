@@ -13,6 +13,8 @@ services:
       - 7077:7077
     volumes:
       - shared-workspace:/opt/workspace
+    networks:
+      - spark-pipeline
     
   spark-worker-1:
     image: spark-worker
@@ -25,6 +27,8 @@ services:
       - shared-workspace:/opt/workspace
     depends_on:
       - spark-master
+    networks:
+      - spark-pipeline
   
   spark-worker-2:
     image: spark-worker
@@ -37,6 +41,8 @@ services:
       - shared-workspace:/opt/workspace
     depends_on:
       - spark-master  
+    networks:
+      - spark-pipeline
 
   zepplin:
     image: apache/zeppelin:0.10.0
@@ -50,3 +56,21 @@ services:
     volumes:
       - ./zeppelin/notebooks:/zeppelin/notebooks
       - ./zeppelin/logs:/zeppelin:logs
+    networks:
+      - spark-pipeline
+
+  db-mysql:
+    image: mysql:8.0.32
+    environment:
+      - MYSQL_DATABASE: pipeline
+      - MYSQL_USER: root 
+      - MYSQL_PASSWORD: root
+      - MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - 3306:3306
+    networks:
+      - spark-pipeline
+
+networks:
+  spark-pipeline:
+    driver: bridge

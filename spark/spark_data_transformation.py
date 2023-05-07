@@ -1,7 +1,17 @@
+"""TODO
+- 다운받은 데이터를 조작하여 원하는 부분만 GCS로 저장
+-> read from GCS directly
+
+- 각 타입 별 사람들이 가장 많이 방문하는 곳 찾기 (DOlocationID)
+- trip miles 비교
+- tip, tolls 비교
+- pick up, drop off 시간대
+- green -> payment type
+"""
+
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import StructField, StructType, LongType, TimestampType, DoubleType, StringType, IntegerType
-
 
 
 spark = (
@@ -9,6 +19,7 @@ spark = (
     .builder 
     .master("local[*]")
     .appName("test")
+    .config('spark.jars', "spark/config/mysql-connector-j-8.0.32.jar")
     .getOrCreate()
     )
 
@@ -44,7 +55,7 @@ data = data.filter(data.pickup_datetime >= '2020-01-01')  # 과거 데이터가 
 data.createOrReplaceTempView("trip_data")  # sql 사용을 위한 테이블 등록
 monthly_agg = spark.sql("""
 SELECT
-    date_trunc('month', pickup_datetime) AS month,
+    DATE_FORMAT(date_trunc('month', pickup_datetime), '%y-%M') AS month,
     service_type,
 
     ROUND(SUM(fare_amount), 3) AS monthly_fare,
@@ -67,13 +78,12 @@ ORDER BY
 
 monthly_agg.show()
 
-"""TODO
-- 다운받은 데이터를 조작하여 원하는 부분만 GCS로 저장
--> read from GCS directly
-
-- 각 타입 별 사람들이 가장 많이 방문하는 곳 찾기 (DOlocationID)
-- trip miles 비교
-- tip, tolls 비교
-- pick up, drop off 시간대
-- green -> payment type
-"""
+monthly_agg.write \
+    .format("jdbc") \
+    .mode('overwrite') \
+    .option("driver", "com.mysql.cj.jdbc.Driver") \
+    .option("url", "jdbc:mysql://localhost:3306/pipeline?useSSL=false&allowPublicKeyRetrieval=true") \
+    .option("dbtable", "monthly_revenue") \
+    .option("user", "root") \
+    .option("password", "root") \
+    .save()

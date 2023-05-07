@@ -17,6 +17,7 @@
 - 약간의 데이터분석
 - aggregation 결과를 DB로 저장 (MySQL)
 - airflow로 batch job 구성
+- [mysql-connector download](https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-j-8.0.32.tar.gz)
 
 ### Airflow? cron?
 - Spark job batch scheduling
