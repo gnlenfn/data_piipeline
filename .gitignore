@@ -1,6 +1,6 @@
 .DS_Store
 
-*.ipynb*
+spark/.ipynb_checkpoints
 .vscode
 .idea
 test.py
